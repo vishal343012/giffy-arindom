@@ -1,0 +1,13 @@
+configuration-as-code:1810.v9b_c30a_249a_4c 
+role-strategy:727.vd344b_eec783d 
+matrix-auth:3.2.2
+maven-plugin:3.23
+google-compute-engine:4.573.v7dcd6a_37a_ee2
+google-oauth-plugin:1.330.vf5e86021cb_ec
+gcloud-sdk:0.0.3
+workflow-aggregator:596.v8c21c963d92d
+workflow-cps:3894.3896.vca_2c931e7935
+build-pipeline-plugin:2.0.2
+gcp-secrets-manager-credentials-provider:0.3.1
+job-dsl:1.87
+git:5.2.2

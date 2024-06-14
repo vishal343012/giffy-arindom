@@ -1,0 +1,130 @@
+jenkins:
+  clouds:
+      - computeEngine:
+          cloudName: jenkins-build
+          projectId: giffy-repo
+          instanceCapStr: 2
+          credentialsId: giffy-repo
+          noDelayProvisioning: false
+          configurations:
+            - namePrefix:         jenkins-agent-image
+              description:        Jenkins agent
+              launchTimeoutSecondsStr: 6000
+              retentionTimeMinutesStr: 300
+              mode:               EXCLUSIVE
+              labelString:        jenkins-agent
+              numExecutorsStr:    1
+              runAsUser:          jenkins
+              remoteFs:           /tmp
+              javaExecPath:       "java"
+              oneShot:            true
+              createSnapshot:     false
+              region:             "https://www.googleapis.com/compute/v1/projects/giffy-repo/regions/asia-south1"
+              zone:               "https://www.googleapis.com/compute/v1/projects/giffy-repo/zones/asia-south1-a"
+              template:           '' # tried not setting, added when 'saved' in UI
+              machineType:        "https://www.googleapis.com/compute/v1/projects/giffy-repo/zones/asia-south1-a/machineTypes/n1-standard-2"
+              preemptible:        false
+              minCpuPlatform:     '' # tried not setting, added when 'saved' in UI
+              startupScript:      '' # tried not setting, added when 'saved' in UI
+              networkConfiguration:
+                autofilled:
+                  network:        default
+                  subnetwork:     default
+              networkTags:        jenkins-agent
+              networkInterfaceIpStackMode:
+                singleStack:
+                  externalIPV4Address:    true
+              useInternalAddress: false
+              bootDiskSourceImageProject: giffy-repo  
+              bootDiskSourceImageName: "https://www.googleapis.com/compute/v1/projects/giffy-repo/global/images/jenkins-agent-1716104368"
+              bootDiskType:       "https://www.googleapis.com/compute/v1/projects/giffy-repo/zones/asia-south1-a/diskTypes/pd-standard"
+              bootDiskSizeGbStr:  50
+              bootDiskAutoDelete: true
+              serviceAccountEmail: '1026525110346-compute@developer.gserviceaccount.com'
+  authorizationStrategy:
+    roleBased:
+      roles:
+        global:
+          - name: "admin"
+            description: "Jenkins administrators"
+            permissions:
+              - "Overall/Administer"
+            entries:
+              - user: "admin"
+          - name: "readonly"
+            description: "Read-only users"
+            permissions:
+              - "Overall/Read"
+              - "Job/Read"
+            entries:
+              - user: "anonymous"
+        items:
+          - name: "FolderA"
+            description: "Jobs in Folder A, but not the folder itself"
+            pattern: "A/.*"
+            permissions:
+              - "Job/Configure"
+              - "Job/Build"
+              - "Job/Delete"
+            entries:
+              - user: "user1"
+              - user: "user2"
+          - name: "FolderB"
+            description: "Jobs in Folder B, but not the folder itself"
+            pattern: "B.*"
+            permissions:
+              - "Job/Configure"
+              - "Job/Build"
+            entries:
+              - user: "user2"
+        agents:
+          - name: "Agent1"
+            description: "Agent 1"
+            pattern: "agent1"
+            permissions:
+              - "Agent/Build"
+            entries:
+              - user: "user1"
+  numExecutors: 0
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: "admin"
+          password: "infiflexadmin88343"
+        - id: "vishal"
+          password: "vishal7667&^$"
+        - id: "kajal"
+          password: "kajal99313^%^&"
+        - id: "jude"
+          password: "jude2332**&%"
+        - id: "user_hashed"
+          # password is password
+          password: "#jbcrypt:$2a$10$3bnAsorIxhl9kTYvNHa2hOJQwPzwT4bv9Vs.9KdXkh9ySANjJKm5u"
+unclassified:
+  location:
+    url: http://localhost:8080/
+  scmGit:
+    addGitTagAction: false
+    allowSecondFetch: false
+    createAccountBasedOnEmail: false
+    disableGitToolChooser: false
+    globalConfigEmail: "jenkins-user@example.com"
+    globalConfigName: "jenkins-user"
+    hideCredentials: false
+    showEntireCommitSummaryInChanges: true
+    useExistingAccountWithSameEmail: false
+configuration-as-code:
+  deprecated: warn
+credentials:
+  system:
+    domainCredentials:
+      - credentials:
+          - googleRobotPrivateKeyCredentials:
+              id: giffy-repo
+              projectId: giffy-repo
+              serviceAccountConfig:
+                jsonServiceAccountConfig:
+                  secretJsonKey: 'ewogICJ0eXBlIjogInNlcnZpY2VfYWNjb3VudCIsCiAgInByb2plY3RfaWQiOiAiZ2lmZnktcmVwbyIsCiAgInByaXZhdGVfa2V5X2lkIjogImQ3Zjg1NzlmZWY1ZDZkYjY2NmVkMzY0NWE0ZGI5YmY5MDVmOWJlYjIiLAogICJwcml2YXRlX2tleSI6ICItLS0tLUJFR0lOIFBSSVZBVEUgS0VZLS0tLS1cbk1JSUV2UUlCQURBTkJna3Foa2lHOXcwQkFRRUZBQVNDQktjd2dnU2pBZ0VBQW9JQkFRQ25xUjNqWlhtck1iM3Rcbksxeko1RjVQTlozTTRVdnR2TmJlaDd4Z1lMM0NBYWthMnowUmlzMWUxNFc1akRubFNwWUlndWd6REROOFFDc1VcbjlLVnZlU3o0aHIwTjhBQWFWanQ4NTJocWNEUmhtc3l6NnJOejJ4L3JLYml1YXQxdk10dW1Nd0xDUDdNSDlYTUdcbkl1aUR3ajBjNkZWNzJ1MUZzRlVLYVh0RDRaenYvb1FZTEZYY25oR2ZpdG9iZ0cvOGZwWGFzWS9GQ04xbUhRUHVcbkY2UVpGV0lmRXhQbXRJdm5CZHZTVE0reldESERwRU16OC9rbjBSdjF4VktGT1hEUkJRdDUySFVHTkhmZ25mUUJcblV3Y2pDMHB5U2piMkVoVy9abVpnOHovSnE3bEdvcnZORUtJd1FOdTY3M0tGOTdETDYxL0FPQ2tNZTJYZUZWNFNcbnY4VlduSDVqQWdNQkFBRUNnZ0VBVHN4WGpVUG9rcEsreW1TS2FDTHFSajBUVExNSW5oUVdRcUUxNG5BbFR6Uzdcbmx6RTZPdS9yQk91ellGanM3dnlHbGpwOFNsMnVKdlA3cTQ0dDRMM3BhbWJkSE50VEdRMjFTTWR6MWk2bEY4aUtcbjgvWlhZQmk1SUN2TUxrRndrQzR0ZUtmWjRKVFNubWQ0SjRhcGxCOXEzSmEvY29ZYTVSbHlab0hiMnJRREwvSENcbmpPeDhkVlBkenRxL3ltcHZ0ck5RZHFid1Bqai80ZWNBRkdxVVUwT2NqNForVmZmTHRWeXQzVDJ2eHNGNURESXdcbmpmSmc5LzRFOEp4MmNkN3F1MHBJa2NnUGN0NTZEK2hkVGNUN1dLTHhhdXVzQzdWVmJWTUpySU9ZbTBZZUlVQWhcbkE2akNsRTY5V0JlVVI0cXdINDdtWGxWQmtwT1RhZGp2ZHJIYVcrcXBaUUtCZ1FEWkN6bFJrK2twK1JSOHZIR1pcbis0Ti9DYTVEOUFKSjE0RjJFd3RNQ0tLb1puWnc5b2JZbDBVYlg2UUMyN09NZDR0TnE1Wk1CeU9MZ3JqeDR5bWVcbkl4TDh3eFh0ZFRxdDVIZ2poZ0xRd1JLeXBoUmwwYmVxUExUbEg2RWxVWlZYN2syU25UcDRrTHhoUFp4WmpRVERcbmVjNkhpejd0TFk3QUxIdWZDUXRNNm56VUJ3S0JnUURGd05KZ0NiaVcvZGFpRkU3OFN2TjFQK0hPaExhdi9hT1lcbmJyV1ZyRVhVVWZ6aTdtWVlYZnVZQUc3TnkyTFdyV1plU29iQVdDc2FSQnBWOTRjamp4czhwVXJxY2p5dzlleFVcbjhBQmFQYUc1Rk5ST0czZ3RhVlR3SUpOLzdoOVdJbHgyM0puWGFtZmVxYVk1VXJncEpjRlNRWlc4Y3A5OFFSdk5cbmdzdzRMWlREeFFLQmdESnMweUpLMU83MWVYY0phUE0zWmZPTDBqcmpZK3kzN3RINTFyUVJoWWpPVlZJbFZHclpcbnFpcVQ2OHptTWk2K1QxVDZPbTdyY2F5bDhFWHlXdWJzaXlyQ1FFUHM2bmNnRDNGaFh5SVUyVDA4TEowRFBrS0VcbjNCb25ZUThFaDBmb2k0azJrakVVbjArUU90VHJXR0g1Mkt2UkJBdWllL25WMjlxMUJUVVhmV3pkQW9HQWI0YjBcbjNzYjh2T05DQmp6UDR3ZmVVRlVMNDY0RFhqUDg3TDRiV09ORXFwN21zWkZrTVAvb0lleTBrUW5RbjJSQjVKSEJcbmQzOENLQmthaFR0Smt1dGxvQWxVdSs1YmZpM2o4RzgrczZZb3JEb3NGalQxelI2bmtabTl0aHUwdnA0NGFheTJcbmNzQUcvcFBOTkcwTGdlRlNLekxqNE5rQVMxSm8vTGwwdFlZM2JVVUNnWUVBcy9mTjhmeU54RENSTE9aOXBXNThcbmFGK2FGWDFIT1dCWFZmeDRxSUhoRzE5TzQ5ZGxzMkwyYkNFZ3NxeXFnUmR4K2k1cFZST29ZMzF4MTNjZkNCWXZcbjRQNGR2VHo5VmdhdkpCaDl1M2ZWMGxIZmorV1VUd09pNzBOWEh0WmwxSllFMkFKd3lXRGNYN2R2UDc4OGFRM2JcbmFCVS8rUG9ldktONjE1cTgwV1g0aTA0PVxuLS0tLS1FTkQgUFJJVkFURSBLRVktLS0tLVxuIiwKICAiY2xpZW50X2VtYWlsIjogIjEwMjY1MjUxMTAzNDYtY29tcHV0ZUBkZXZlbG9wZXIuZ3NlcnZpY2VhY2NvdW50LmNvbSIsCiAgImNsaWVudF9pZCI6ICIxMDczMTg3MDYyMjM5ODgzMzk5NTUiLAogICJhdXRoX3VyaSI6ICJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20vby9vYXV0aDIvYXV0aCIsCiAgInRva2VuX3VyaSI6ICJodHRwczovL29hdXRoMi5nb29nbGVhcGlzLmNvbS90b2tlbiIsCiAgImF1dGhfcHJvdmlkZXJfeDUwOV9jZXJ0X3VybCI6ICJodHRwczovL3d3dy5nb29nbGVhcGlzLmNvbS9vYXV0aDIvdjEvY2VydHMiLAogICJjbGllbnRfeDUwOV9jZXJ0X3VybCI6ICJodHRwczovL3d3dy5nb29nbGVhcGlzLmNvbS9yb2JvdC92MS9tZXRhZGF0YS94NTA5LzEwMjY1MjUxMTAzNDYtY29tcHV0ZSU0MGRldmVsb3Blci5nc2VydmljZWFjY291bnQuY29tIiwKICAidW5pdmVyc2VfZG9tYWluIjogImdvb2dsZWFwaXMuY29tIgp9Cg=='
+jobs:
+  - file: /usr/share/jenkins/jobs/firstjob.groovy
